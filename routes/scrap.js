@@ -67,18 +67,21 @@ function scrap_pages( urls, callback ){
 
 function startScrapping(){
     let locations = service.getLocations()
-    var baseUrl = "https://lottery.com/results/"
+    var baseUrl = "https://www.lotteryusa.com/"
     var urls = []
     for( let code in locations ){
         let location = locations[code]
-        let url = baseUrl + code +'/'
-        // if( urls.length < 1 ){
+        let locationForUrl = location.replace(' ', '-')
+        locationForUrl = locationForUrl.toLowerCase();
+        let url = baseUrl + locationForUrl +'/'
+        if( urls.length < 1 ){
             urls.push( {
                 location: location,
                 url: url
             } );
-        // }
+        }
     }
+    console.log( urls )
     scrap_pages( urls, function(){
         console.log('All are done!!!');
     })
@@ -96,7 +99,7 @@ cron.schedule("*/10 * * * *", function() {
     console.log("CRON runs to scrap data in every 5 mins");
     console.log('---------------------------------------')
     console.log('---------------------------------------')
-    startScrapping()
+    // startScrapping()
 });
 
 module.exports = router;

@@ -37,53 +37,69 @@ const getResultsByRequest = function( location, url, callback ){
 
         let allResults = []
         jQuery = cheerio.load( body );
-        console.log(jQuery('.js-results-container').length)
-        if( jQuery('.js-results-container').find('.result-list-container').length > 0 ){
-          jQuery('.js-results-container').find('.result-list-container').each(function(){
-            let gameName = jQuery(this).find('.result-list-header').find('.result-list-name').text() || "";
-            if( jQuery(this).find('.result-list').find('.result-list-item').length > 0 ){
-                jQuery(this).find('.result-list').find('.result-list-item').each(function(){
-                    let dateText = jQuery(this).find('.result-date-wrap').find('time').text() || "";
-                    let dateTime = jQuery(this).find('.result-date-wrap').find('time').attr('datetime') || "";
-                    let jackpotLabel = jQuery(this).find('.result-jackpot-wrap').find('.result-jackpot-label').text() || "";
-                    let jackpotAmount = jQuery(this).find('.result-jackpot-wrap').find('.result-jackpot').text() || "";
-                    let jackpotResultBalls = []
-                    let powerBall = ""
-                    if( jQuery(this).find('.result-content-wrap').find('.result-numbers').find('.lottery-ball-wrap').length > 0 ){
-                        jQuery(this).find('.result-content-wrap').find('.result-numbers').find('.lottery-ball-wrap').each(function(){
-                            let ballNumber = jQuery(this).find('.lottery-number').text() || "";
-                            if(jQuery(this).find('div.bonus').length > 0 ){
-                                powerBall = ballNumber
-                            } else {
-                                jackpotResultBalls.push(ballNumber)
-                            }
-                        })
+        console.log(jQuery('.state-results').length)
+        if( jQuery('.state-results').find('tr').length > 0 ){
+          jQuery('.state-results').find('tr').each(function(){
+            let gameName = jQuery(this).find('.game').find('.game-title').text() || "";
+            let dateText = jQuery(this).find('.result').find('time').attr('datetime') || "";
+            let jackpotAmount = jQuery(this).find('.jackpot').find('.jackpot-amount').text() || "";
+
+
+            // let dateTime = jQuery(this).find('.result-date-wrap').find('time').attr('datetime') || "";
+            // let jackpotLabel = jQuery(this).find('.result-jackpot-wrap').find('.result-jackpot-label').text() || "";
+            let powerPlayText = ""
+            let jackpotResultBalls = []
+            let powerBall = ""
+            if( jQuery(this).find('.result').find('.draw-result').find('li').length > 0 ){
+                jQuery(this).find('.result').find('.draw-result').find('li').each(function(){
+                    jQuery(this).find('span').remove()
+                    let ballNumber = jQuery(this).text() || "";
+                    let check = jQuery(this).attr('class')
+                    if( typeof check == 'undefined' ){
+                        jackpotResultBalls.push(ballNumber)
+                    } else {
+                        if( check == 'extra' ){
+                            powerPlayText = ballNumber
+                        } else {
+                            powerBall = ballNumber
+                        }
                     }
-                    let powerPlayText = jQuery(this).find('.result-content-wrap').find('.lottery-item-bonus').text() || ""
 
-                    //extract game id
-                    let keyy = location + '_' + gameName;
-
-                    keyy = keyy.toLowerCase()
-
-                    let gameId = arrGameIds[keyy] || ""
-
-                    let res = {
-                        gameId: gameId,
-                        location: location,
-                        gameName: gameName,
-                        dateText: dateText,
-                        dateTime: dateTime,
-                        jackpotLabel: jackpotLabel,
-                        jackpotAmount: jackpotAmount,
-                        jackpotResultBalls: jackpotResultBalls,
-                        powerBall: powerBall,
-                        powerPlayText: powerPlayText
-                    }
-                    // console.log( res )
-                    allResults.push(res)
+                    // if( jQuery(this).hasAttr('class') ){
+                    //     powerBall = ballNumber
+                    // } else {
+                    //     jackpotResultBalls.push(ballNumber)
+                    // }
                 })
             }
+            // let powerPlayText = jQuery(this).find('.result-content-wrap').find('.lottery-item-bonus').text() || ""
+
+            // //extract game id
+            // let keyy = location + '_' + gameName;
+
+            // keyy = keyy.toLowerCase()
+
+            // let gameId = arrGameIds[keyy] || ""
+
+            if( gameName != "" ){
+                let res = {
+                    // gameId: gameId,
+                    // location: location,
+                    gameName: gameName.trim(),
+                    dateText: dateText.trim(),
+                    jackpotAmount: jackpotAmount.trim(),
+                    // dateTime: dateTime,
+                    // jackpotLabel: jackpotLabel,
+
+                    jackpotResultBalls: jackpotResultBalls,
+                    powerBall: powerBall.trim(),
+                    powerPlayText: powerPlayText.trim()
+                }
+                console.log( res )
+                // allResults.push(res)
+            }
+
+
           })
         }
       callback('success',allResults);
