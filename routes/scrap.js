@@ -74,12 +74,12 @@ function startScrapping(){
         let locationForUrl = location.replace(' ', '-')
         locationForUrl = locationForUrl.toLowerCase();
         let url = baseUrl + locationForUrl +'/'
-        if( urls.length < 1 ){
+        // if( urls.length < 1 ){
             urls.push( {
                 location: location,
                 url: url
             } );
-        }
+        // }
     }
     console.log( urls )
     scrap_pages( urls, function(){
@@ -99,7 +99,7 @@ cron.schedule("*/10 * * * *", function() {
     console.log("CRON runs to scrap data in every 5 mins");
     console.log('---------------------------------------')
     console.log('---------------------------------------')
-    // startScrapping()
+    startScrapping()
 });
 
 module.exports = router;

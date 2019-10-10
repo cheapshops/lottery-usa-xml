@@ -34,19 +34,16 @@ const getResultsByRequest = function( location, url, callback ){
   request(options, async function (error, response, body) {
     if (!error) {
         let arrGameIds = await getGameIds()
-
         let allResults = []
         jQuery = cheerio.load( body );
         console.log(jQuery('.state-results').length)
         if( jQuery('.state-results').find('tr').length > 0 ){
           jQuery('.state-results').find('tr').each(function(){
             let gameName = jQuery(this).find('.game').find('.game-title').text() || "";
-            let dateText = jQuery(this).find('.result').find('time').attr('datetime') || "";
+            let dateText = jQuery(this).find('.result').find('time').text() || "";
+            let dateTime = jQuery(this).find('.result').find('time').attr('datetime') || "";
             let jackpotAmount = jQuery(this).find('.jackpot').find('.jackpot-amount').text() || "";
-
-
-            // let dateTime = jQuery(this).find('.result-date-wrap').find('time').attr('datetime') || "";
-            // let jackpotLabel = jQuery(this).find('.result-jackpot-wrap').find('.result-jackpot-label').text() || "";
+            let jackpotLabel = ""
             let powerPlayText = ""
             let jackpotResultBalls = []
             let powerBall = ""
@@ -64,42 +61,29 @@ const getResultsByRequest = function( location, url, callback ){
                             powerBall = ballNumber
                         }
                     }
-
-                    // if( jQuery(this).hasAttr('class') ){
-                    //     powerBall = ballNumber
-                    // } else {
-                    //     jackpotResultBalls.push(ballNumber)
-                    // }
                 })
             }
-            // let powerPlayText = jQuery(this).find('.result-content-wrap').find('.lottery-item-bonus').text() || ""
-
-            // //extract game id
-            // let keyy = location + '_' + gameName;
-
-            // keyy = keyy.toLowerCase()
-
-            // let gameId = arrGameIds[keyy] || ""
-
+            // extract game id
+            let keyy = location + '_' + gameName;
+            keyy = keyy.toLowerCase()
+            let gameId = arrGameIds[keyy] || ""
+            // console.log('-------------------------------' + gameId)
             if( gameName != "" ){
                 let res = {
-                    // gameId: gameId,
-                    // location: location,
+                    gameId: gameId,
+                    location: location,
                     gameName: gameName.trim(),
                     dateText: dateText.trim(),
                     jackpotAmount: jackpotAmount.trim(),
-                    // dateTime: dateTime,
-                    // jackpotLabel: jackpotLabel,
-
+                    dateTime: dateTime,
+                    jackpotLabel: jackpotLabel,
                     jackpotResultBalls: jackpotResultBalls,
                     powerBall: powerBall.trim(),
                     powerPlayText: powerPlayText.trim()
                 }
-                console.log( res )
-                // allResults.push(res)
+                // console.log( res )
+                allResults.push(res)
             }
-
-
           })
         }
       callback('success',allResults);
